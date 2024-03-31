@@ -12,6 +12,7 @@ var opcao6 = document.createElement('button');
 var div_input = document.createElement('div');
 var div_tudo = document.createElement('div');
 var nivelAtual = 0;
+var eventListeners = [];
 var comecou = false;
 var acabou = false;
 var config = false;
@@ -49,10 +50,24 @@ function reiniciarVariaveisDeControle() {
     comecou = false;
     acabou = false;
     pontuacao = 0;
+    enigma.style.opacity = '1';
 }
+
+    function addEventListenerComHistorico(elemento, tipoDeEvento, funcao) {
+        elemento.addEventListener(tipoDeEvento, funcao);
+        eventListeners.push({ elemento, tipoDeEvento, funcao});
+    }
+
+    function removerTodososEventListeners() {
+        eventListeners.forEach(({ elemento, tipoDeEvento, funcao }) => {
+            elemento.removeEventListener(tipoDeEvento, funcao);
+        });
+        eventListeners = [];
+    }
 
 function habilitarMenuPrincipal() {
     reiniciarVariaveisDeControle();
+    removerTodososEventListeners();
     config = false;
     cores = false;
     nivel.style.cssText = '';
@@ -64,7 +79,7 @@ function habilitarMenuPrincipal() {
     pergunta.textContent = '';
     opcao1.innerHTML = 'Jogar';
     opcao2.innerHTML = 'Configurações';
-    opcao2.addEventListener('click', configuracoes);
+    addEventListenerComHistorico(opcao2, 'click', configuracoes);
     opcao3.innerHTML = 'Versões';
     opcao4.innerHTML = 'Feedback';
     opcoes.forEach(function (botao, index) {
@@ -76,6 +91,7 @@ function habilitarMenuPrincipal() {
 }
 
 function configuracoes() {
+    removerTodososEventListeners();
     config = true;
     setTimeout (function () {
     reiniciarVariaveisDeControle();
@@ -87,11 +103,11 @@ function configuracoes() {
     nivel.textContent = 'Configurações';
     pergunta.textContent = '';
     opcao1.innerHTML = 'Mudar cores';
-    opcao1.addEventListener('click', irParaMenuMudarCores);
+    addEventListenerComHistorico(opcao1, 'click', irParaMenuMudarCores);
     opcao2.innerHTML = 'Remover animações';
     opcao3.innerHTML = 'n sei';
     opcao4.innerHTML = 'Voltar ao menu principal';
-    opcao4.addEventListener('click', voltarAoMenuPrincipal);
+    addEventListenerComHistorico(opcao4, 'click', voltarAoMenuPrincipal);
     opcoes.forEach(function (botao, index) {
         setTimeout(function () {
             botao.style.animation = 'entrada 1s ease-in-out';
@@ -102,9 +118,8 @@ function configuracoes() {
 }
 
 function irParaMenuMudarCores() {
-    opcao1.removeEventListener('click', irParaMenuMudarCores);
-    opcao2.removeEventListener('click', configuracoes);
-    opcao4.removeEventListener('click', voltarAoMenuPrincipal);
+    removerTodososEventListeners();
+    opcao5.classList.add('main__botao');
     setTimeout (function () {
         cores = true;
         div_tudo.classList.add('div_tudo');
@@ -123,26 +138,27 @@ function irParaMenuMudarCores() {
         nivel.textContent = 'Mudar cores';
         pergunta.textContent = '';
         opcao1.innerHTML = 'Mudar cor de fundo';
-        opcao1.addEventListener('click', definirCorDeFundo);
+        addEventListenerComHistorico(opcao1, 'click', definirCorDeFundo);
         opcao2.innerHTML = 'Mudar cor dos textos';
-        opcao2.addEventListener('click', definirCorDosTextos);
+        addEventListenerComHistorico(opcao2, 'click', definirCorDosTextos);
         opcao3.innerHTML = 'Mudar cor dos botões';
-        opcao3.addEventListener('click', definirCorDosBotoes);
+        addEventListenerComHistorico(opcao3, 'click', definirCorDosBotoes);
         opcao4.innerHTML = 'Mudar cor dos botões no hover';
-        opcao4.addEventListener('click', definirCorDosBotoesNoHover);
-        opcao5.classList.add('main__botao');
-        setInterval(function () {
-            opcao5.style.cssText = opcao1.style.cssText;
-        }, 1000);
+        addEventListenerComHistorico(opcao4, 'click', definirCorDosBotoesNoHover);
         div_botoes.appendChild(opcao5);
         opcao5.innerHTML = 'Voltar ao menu principal';
-        opcao5.addEventListener('click', voltarAoMenuPrincipal);
+        addEventListenerComHistorico(opcao5, 'click', voltarAoMenuPrincipal);
+        opcoes = document.querySelectorAll('.main__botao');
         opcoes.forEach(function (botao, index) {
             setTimeout(function () {
                 botao.style.animation = 'entrada 1s ease-in-out';
                 botao.style.opacity = '1';
             }, 250 * index);
         });
+        input.style.animation = 'real-fade-in 1s ease-in-out';
+        setTimeout(() => {
+            input.style.opacity = '1';
+        }, 1000);
     }, 4000);
 }
 
@@ -166,12 +182,30 @@ function definirCorDosBotoesNoHover() {
     document.documentElement.style.setProperty('--cor-terciaria', corSelecionada);
 }  
 
+
+function desfazerDivsDasCores() {
+    enigma.style.opacity = '0';
+    div_botoes.removeChild(opcao5);
+    enigma.appendChild(div_botoes);
+    enigma.removeChild(div_tudo);
+}
+
+function removerInput() {
+    input.style.animation = 'saida-texto 1s ease-in-out';
+    setTimeout(() => {
+        input.style.opacity = '0';
+    }, 1000);
+}
+
 function voltarAoMenuPrincipal() {
     setTimeout(function () {
         acabou = true;
         cores = false;
-        enigma.removeChild(input);
         sairPergunta();
+        removerInput();
+        setTimeout(() => {
+            desfazerDivsDasCores();
+        }, 2500);
         setTimeout(function () {
             habilitarMenuPrincipal();
         }, 3000)
@@ -179,8 +213,7 @@ function voltarAoMenuPrincipal() {
 }
 
 function entrarPergunta() {
-    opcao2.removeEventListener('click', configuracoes);
-    opcao4.removeEventListener('click', voltarAoMenuPrincipal);
+    removerTodososEventListeners();
     if (i == 0) {
         pergunta.innerHTML = perguntas[0];
         nivel.innerHTML = `Nível ${nivelAtual}`;
@@ -293,10 +326,37 @@ function sairPergunta() {
         }, 1500);
 }
 
+function resetarBotoes() {
+    if (cores == true) {
+        return;
+    } else {
+        opcoes.forEach(botao => {
+            botao.style.backgroundColor = 'var(--cor-secundaria)';
+        });
+    }
+}
+
+function destacarBotaoClicado(botao) {
+    var botaoClicado = botao;
+    botaoClicado.style.backgroundColor = 'var(--cor-principal)';
+    setTimeout(() => {
+        botaoClicado.style.backgroundColor = 'var(--cor-secundaria)';
+    }, 1000);
+    if (cores == true) {
+    botaoClicado.addEventListener('mouseenter', function () {
+        botaoClicado.style.backgroundColor = 'var(--cor-terciaria)';
+    });
+    botaoClicado.addEventListener('mouseleave', function () {
+        botaoClicado.style.backgroundColor = 'var(--cor-secundaria)';
+    });  
+    } else {
+        return;
+    }
+}
 
 opcao1.addEventListener('click', function () {
     if (i >= perguntas.length) {
-        opcao1.style.backgroundColor = 'var(--cor-principal)';
+        destacarBotaoClicado(opcao1);
         setTimeout(function () {
             acabou = true;
             sairPergunta();
@@ -304,26 +364,16 @@ opcao1.addEventListener('click', function () {
                 habilitarMenuPrincipal();
             }, 3000)
         }, 1500)
-        setTimeout(function () {
-        opcao1.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao2.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao3.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao4.style.backgroundColor = 'var(--cor-secundaria)';
-        }, 1000);
+        setTimeout(resetarBotoes, 1000);
         i = 0;
         nivelAtual = 0;
     } else {
         if ((respostasCertas[i] == 1) || (comecou == false)) {
-            opcao1.style.backgroundColor = 'var(--cor-principal)';
+            destacarBotaoClicado(opcao1);
             setTimeout(function () {
                 sairPergunta();
             }, 1500)
-            setTimeout(function () {
-            opcao1.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao2.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao3.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao4.style.backgroundColor = 'var(--cor-secundaria)';
-        }, 1000)
+            setTimeout(resetarBotoes, 1000);
     } else {
         opcao1.style.backgroundColor = 'var(--cor-vermelha)';
         pontuacao--;
@@ -332,7 +382,7 @@ opcao1.addEventListener('click', function () {
 });
 opcao2.addEventListener('click', function () {
     if (i >= perguntas.length) {
-        opcao2.style.backgroundColor = 'var(--cor-principal)';
+        destacarBotaoClicado(opcao2);
         setTimeout(function () {
             acabou = true;
             sairPergunta();
@@ -340,26 +390,16 @@ opcao2.addEventListener('click', function () {
                 habilitarMenuPrincipal();
             }, 1500)
         }, 1500)
-        setTimeout(function () {
-        opcao1.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao2.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao3.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao4.style.backgroundColor = 'var(--cor-secundaria)';
-        }, 1000);
+        setTimeout(resetarBotoes, 1000);
         i = 0;
         nivelAtual = 0;
     } else {
         if ((respostasCertas[i] == 2) || (comecou == false)) {
-            opcao2.style.backgroundColor = 'var(--cor-principal)';
+            destacarBotaoClicado(opcao2);
             setTimeout(function () {
                 sairPergunta();
             }, 1500)
-            setTimeout(function () {
-            opcao1.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao2.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao3.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao4.style.backgroundColor = 'var(--cor-secundaria)';
-        }, 1000)
+            setTimeout(resetarBotoes, 1000);
     } else {
         opcao2.style.backgroundColor = 'var(--cor-vermelha)';
         pontuacao--;
@@ -367,7 +407,7 @@ opcao2.addEventListener('click', function () {
 }});
 opcao3.addEventListener('click', function () {
     if (i >= perguntas.length) {
-        opcao3.style.backgroundColor = 'var(--cor-principal)';
+        destacarBotaoClicado(opcao3);
         setTimeout(function () {
             acabou = true;
             sairPergunta();
@@ -375,34 +415,24 @@ opcao3.addEventListener('click', function () {
                 habilitarMenuPrincipal();
             }, 1500)
         }, 1500)
-        setTimeout(function () {
-        opcao1.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao2.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao3.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao4.style.backgroundColor = 'var(--cor-secundaria)';
-        }, 1000);
+        setTimeout(resetarBotoes, 1000);
         i = 0;
         nivelAtual = 0;
     } else {
         if ((respostasCertas[i] == 3) || (comecou == false)) {
-            opcao3.style.backgroundColor = 'var(--cor-principal)';
+            destacarBotaoClicado(opcao3);
             setTimeout(function () {
                 sairPergunta();
             }, 1500)
-            setTimeout(function () {
-            opcao1.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao2.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao3.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao4.style.backgroundColor = 'var(--cor-secundaria)';
-        }, 1000)
+            setTimeout(resetarBotoes, 1000);
     } else {
         opcao3.style.backgroundColor = 'var(--cor-vermelha)';
         pontuacao--;
-    }
+    }   
 }});
 opcao4.addEventListener('click', function () {
     if (i >= perguntas.length) {
-        opcao4.style.backgroundColor = 'var(--cor-principal)';
+        destacarBotaoClicado(opcao4);
         setTimeout(function () {
             acabou = true;
             sairPergunta();
@@ -410,26 +440,16 @@ opcao4.addEventListener('click', function () {
                 habilitarMenuPrincipal();
             }, 1500)
         }, 1500)
-        setTimeout(function () {
-        opcao1.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao2.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao3.style.backgroundColor = 'var(--cor-secundaria)';
-        opcao4.style.backgroundColor = 'var(--cor-secundaria)';
-        }, 1000);
+        setTimeout(resetarBotoes, 1000);
         i = 0;
         nivelAtual = 0;
     } else {
         if ((respostasCertas[i] == 4) || (comecou == false)) {
-            opcao4.style.backgroundColor = 'var(--cor-principal)';
+            destacarBotaoClicado(opcao4);
             setTimeout(function () {
                 sairPergunta();
             }, 1500)
-            setTimeout(function () {
-            opcao1.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao2.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao3.style.backgroundColor = 'var(--cor-secundaria)';
-            opcao4.style.backgroundColor = 'var(--cor-secundaria)';
-        }, 1000)
+            setTimeout(resetarBotoes, 1000);
     } else {
         opcao4.style.backgroundColor = 'var(--cor-vermelha)';
         pontuacao--;
