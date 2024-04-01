@@ -11,6 +11,7 @@ var div_input = document.createElement('div');
 var div_tudo = document.createElement('div');
 var nivelAtual = 1;
 var eventListeners = [];
+var erro = false;
 var comecou = false;
 var acabou = false;
 var config = false;
@@ -170,17 +171,22 @@ function resetarBotoes() {
 
 function destacarBotaoClicado(botao) {
     var botaoClicado = botao;
-    botaoClicado.style.backgroundColor = 'var(--cor-principal)';
-    setTimeout(() => {
-        botaoClicado.style.backgroundColor = 'var(--cor-secundaria)';
-    }, 1000);
     if (cores == true) {
-    botaoClicado.addEventListener('mouseenter', function () {
-        botaoClicado.style.backgroundColor = 'var(--cor-terciaria)';
-    });
-    botaoClicado.addEventListener('mouseleave', function () {
-        botaoClicado.style.backgroundColor = 'var(--cor-secundaria)';
-    });  
+        addEventListenerComHistorico(botaoClicado, 'mouseenter', function () {
+            botaoClicado.style.backgroundColor = 'var(--cor-terciaria)';
+        });
+        addEventListenerComHistorico(botaoClicado, 'mouseleave', function () {
+            botaoClicado.style.backgroundColor = 'var(--cor-secundaria)';
+        });
+    }
+    else if (cores == false) {
+        botaoClicado.style.backgroundColor = 'var(--cor-principal)';
+        setTimeout(() => {
+            botaoClicado.style.backgroundColor = 'var(--cor-secundaria)';
+        }, 1000);
+    } else if (erro == true) {
+        botaoClicado.style.backgroundColor = 'var(--cor-vermelha)';
+        return;
     } else {
         return;
     }
@@ -195,6 +201,14 @@ function puxarBotoes() {
     });
 }
 
+function comecarEnigma(botao) {
+    sairPergunta();
+    retirarBotoes();
+    comecou = true;
+    enviarSinal();
+    destacarBotaoClicado(botao);
+}
+
 
 habilitarMenuPrincipal();
 
@@ -203,10 +217,10 @@ function habilitarMenuPrincipal() {
     removerTodososEventListeners();
     resetCSSNoHTML();
     config = false;
-    cores = false;
     nomearTitulo('Enigma');
     limparParagrafo();
     nomearBotoes('Jogar, Configurações, Versões, Feedback');
+    addEventListenerComHistorico(opcao1, 'click', comecarEnigma(opcao1))
     addEventListenerComHistorico(opcao2, 'click', configuracoes);
     puxarBotoes();
 }
@@ -255,7 +269,6 @@ function irParaMenuMudarCores() {
 function voltarAoMenuPrincipal() {
     setTimeout(function () {
         acabou = true;
-        cores = false;
         sairPergunta();
         removerInput();
         setTimeout(() => {
@@ -386,6 +399,7 @@ function sairPergunta() {
 }
 
 function alternativaErrada(botao) {
+    erro = true;
     botao.style.backgroundColor = 'var(--cor-vermelha)';
     pontuacao--;
 }
@@ -393,6 +407,7 @@ function alternativaErrada(botao) {
 function criarEventoParaOpcao(botao, indice) {
     botao.addEventListener('click', function () {
             if ((respostasCertas[i] == indice) || (comecou == false)) {
+                erro = false;
                 destacarBotaoClicado(botao);
                 setTimeout(function () {
                     sairPergunta();
