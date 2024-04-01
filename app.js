@@ -202,11 +202,13 @@ function puxarBotoes() {
 }
 
 function comecarEnigma(botao) {
-    sairPergunta();
-    retirarBotoes();
-    comecou = true;
-    enviarSinal();
     destacarBotaoClicado(botao);
+    setTimeout(() => {
+        sairPergunta();
+        setTimeout(() => {
+            reiniciarVariaveisDeControle();
+        }, 1500);
+    }, 1500);
 }
 
 
@@ -220,7 +222,9 @@ function habilitarMenuPrincipal() {
     nomearTitulo('Enigma');
     limparParagrafo();
     nomearBotoes('Jogar, Configurações, Versões, Feedback');
-    addEventListenerComHistorico(opcao1, 'click', comecarEnigma(opcao1))
+    addEventListenerComHistorico(opcao1, 'click', function () {
+        comecarEnigma(opcao1);
+    });
     addEventListenerComHistorico(opcao2, 'click', configuracoes);
     puxarBotoes();
 }
@@ -281,9 +285,6 @@ function voltarAoMenuPrincipal() {
 }
 
 function resetarPerguntas() {
-    if (i == 0) {
-        enviarSinal();
-    }
     pergunta.innerHTML = perguntas[i];
     nomearTitulo(`Nível ${nivelAtual}`);
     nomearBotoes(respostas[i]);
@@ -324,6 +325,10 @@ function entrarPergunta() {
     resetarPerguntas();
     mostrarTituloEParagrafo();
     mostrarParagrafo();
+    criarEventoParaOpcao(opcao1, 1);
+    criarEventoParaOpcao(opcao2, 2);
+    criarEventoParaOpcao(opcao3, 3);
+    criarEventoParaOpcao(opcao4, 4);
 }
 
 function retirarBotoes() {
@@ -385,6 +390,13 @@ function sairPergunta() {
     retirarBotoes();
         setTimeout(function () {
             setTimeout(function () {
+                resetarPerguntas();
+                if (comecou == false)  {
+                    enviarSinal();
+                    entrarPergunta();
+                } else {
+                    return;
+                }
                 avancarNivel();
                 setTimeout(function () {
                     if (i >= perguntas.length) {
@@ -418,8 +430,3 @@ function criarEventoParaOpcao(botao, indice) {
             }
         }
     )};
-
-criarEventoParaOpcao(opcao1, 1);
-criarEventoParaOpcao(opcao2, 2);
-criarEventoParaOpcao(opcao3, 3);
-criarEventoParaOpcao(opcao4, 4);
