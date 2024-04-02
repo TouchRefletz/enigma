@@ -21,31 +21,19 @@ var i = 0;
 var pontuacao = 0;
 var perguntas = [
     'Qual foi, por muito tempo, o meu jogo favorito?',
-    'Quantos anos eu tenho?',
-    'Qual foi, por muito tempo, meu outro hobby, além de programar?',
-    'Onde eu moro?',
-    'Qual é o nome da minha playlist no Spotify?'
 ];
 var respostas = [
     'Fortnite, Roblox, Minecraft, Subway Surfers',
-    '13, 14, 15, 16',
-    'Editor de Vídeo, Músico, Jogador de futebol, Ator',
-    'Ribeirão Pires, Mauá, Ribeirão Preto, Osasco',
-    'ToqueReflexo, um toque musical, um TOQUE musical, um TOQUE musical.'
 ]
 var respostasCertas = [
     1,
-    2,
-    1,
-    1,
-    4
 ]
 
 function reiniciarVariaveisDeControle() {
     i = 0;
     nivelAtual = 1;
-    comecou = false;
     acabou = false;
+    cores = false;
     pontuacao = 0;
     enigma.style.opacity = '1';
 }
@@ -144,10 +132,21 @@ function definirCorDosBotoesNoHover() {
     document.documentElement.style.setProperty('--cor-terciaria', corSelecionada);
 }  
 
+function definirCorPrincipal() {
+    var corSelecionada = document.querySelector('.input').value;
+    document.documentElement.style.setProperty('--cor-principal', corSelecionada);
+}  
+
+function definirCorDeErro() {
+    var corSelecionada = document.querySelector('.input').value;
+    document.documentElement.style.setProperty('--cor-de-erro', corSelecionada);
+}  
 
 function desfazerDivsDasCores() {
     enigma.style.opacity = '0';
     div_botoes.removeChild(opcao5);
+    div_botoes.removeChild(opcao6);
+    div_botoes.removeChild(opcao7);
     enigma.appendChild(div_botoes);
     enigma.removeChild(div_tudo);
 }
@@ -160,36 +159,31 @@ function removerInput() {
 }
 
 function resetarBotoes() {
-    if (cores == true) {
-        return;
-    } else {
-        opcoes.forEach(botao => {
+    opcoes.forEach(botao => {
+        if (botao.style.backgroundColor == 'var(--cor-de-erro)') {
+            botao.style.backgroundColor = '';
+        }
+    })};
+
+function hoverBotao() {
+    opcoes.forEach(botao => {
+        addEventListenerComHistorico(botao, 'mouseenter', function () {
+            botao.style.backgroundColor = 'var(--cor-terciaria)';
+        });
+        addEventListenerComHistorico(botao, 'mouseleave', function () {
             botao.style.backgroundColor = 'var(--cor-secundaria)';
         });
-    }
+    });
 }
+
+hoverBotao();
 
 function destacarBotaoClicado(botao) {
     var botaoClicado = botao;
-    if (cores == true) {
-        addEventListenerComHistorico(botaoClicado, 'mouseenter', function () {
-            botaoClicado.style.backgroundColor = 'var(--cor-terciaria)';
-        });
-        addEventListenerComHistorico(botaoClicado, 'mouseleave', function () {
-            botaoClicado.style.backgroundColor = 'var(--cor-secundaria)';
-        });
-    }
-    else if (cores == false) {
-        botaoClicado.style.backgroundColor = 'var(--cor-principal)';
-        setTimeout(() => {
-            botaoClicado.style.backgroundColor = 'var(--cor-secundaria)';
-        }, 1000);
-    } else if (erro == true) {
-        botaoClicado.style.backgroundColor = 'var(--cor-vermelha)';
-        return;
-    } else {
-        return;
-    }
+    botaoClicado.style.backgroundColor = 'var(--cor-principal)';
+    setTimeout(() => {
+        botaoClicado.style.backgroundColor = '';
+    }, 1000);
 }
 
 function puxarBotoes() {
@@ -207,12 +201,11 @@ function comecarEnigma(botao) {
         sairPergunta();
         setTimeout(() => {
             reiniciarVariaveisDeControle();
+            enviarSinal();
+            entrarPergunta();
         }, 1500);
     }, 1500);
 }
-
-
-habilitarMenuPrincipal();
 
 function habilitarMenuPrincipal() {
     reiniciarVariaveisDeControle();
@@ -225,7 +218,8 @@ function habilitarMenuPrincipal() {
     addEventListenerComHistorico(opcao1, 'click', function () {
         comecarEnigma(opcao1);
     });
-    addEventListenerComHistorico(opcao2, 'click', configuracoes);
+    addEventListenerComHistorico(opcao2, 'click', puxarConfiguracoes);
+    addEventListenerComHistorico(opcao4, 'click', puxarFeedback);
     puxarBotoes();
 }
 
@@ -233,18 +227,55 @@ function enviarSinal() {
     comecou = true;
 }
 
+function puxarFeedback() {
+    setTimeout(() => {
+        window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSezlu_qzMfavu-fHJdHLMeIe6Sknq006YStxnE5ElU8GOF8gQ/viewform?usp=sf_link';
+    }, 4000);
+}
+
+function puxarLinktree() {
+    setTimeout(() => {
+        window.location.href = 'https://linktr.ee/ToqueReflexo';
+    }, 4000);
+}
+
+function puxarGithub() {
+    setTimeout(() => {
+        window.location.href = 'https://github.com/TouchRefletz';
+    }, 4000);
+}
+
 function configuracoes() {
     removerTodososEventListeners();
     config = true;
+    setTimeout(() => {
+        reiniciarVariaveisDeControle();
+        resetCSSNoHTML();
+        nomearTitulo('Configurações');
+        limparParagrafo();
+        nomearBotoes('Mudar cores, Remover animações, Créditos, Voltar ao menu principal');
+        addEventListenerComHistorico(opcao1, 'click', irParaMenuMudarCores);
+        addEventListenerComHistorico(opcao3, 'click', mostrarCreditos);
+        addEventListenerComHistorico(opcao4, 'click', puxarMenuPrincipal);
+        puxarBotoes();
+    }, 500);
+}
+
+function mostrarCreditos() {
+    removerTodososEventListeners();
     setTimeout (function () {
-    reiniciarVariaveisDeControle();
-    resetCSSNoHTML();
-    nomearTitulo('Configurações');
-    limparParagrafo();
-    nomearBotoes('Mudar cores, Remover animações, n sei, Voltar ao menu principal');
-    addEventListenerComHistorico(opcao1, 'click', irParaMenuMudarCores);
-    addEventListenerComHistorico(opcao4, 'click', voltarAoMenuPrincipal);
-    puxarBotoes();
+        resetCSSNoHTML();
+        nomearTitulo('Créditos');
+        limparParagrafo();
+        pergunta.innerHTML = 'Site desenvolvido por Willian Campos Costa.';
+        mostrarParagrafo();
+        nomearBotoes('Redes Sociais (Linktree), GIthub, Feedback, Voltar ao menu principal');
+        addEventListenerComHistorico(opcao1, 'click', puxarLinktree);
+        addEventListenerComHistorico(opcao2, 'click', puxarGithub);
+        addEventListenerComHistorico(opcao3, 'click', puxarFeedback);
+        addEventListenerComHistorico(opcao4, 'click', puxarMenuPrincipal);
+        puxarBotoes();
+        puxarInput();
     }, 4000);
 }
 
@@ -258,19 +289,23 @@ function irParaMenuMudarCores() {
         resetCSSNoHTML();
         nomearTitulo('Mudar cores');
         limparParagrafo();
-        criarBotoes(1, 'opcao5');
-        nomearBotoes('Mudar cor de fundo, Mudar cor dos textos, Mudar cor dos botões, Mudar cor dos botões no hover, Voltar ao menu principal');
+        criarBotoes(3, 'opcao5, opcao6, opcao7');
+        nomearBotoes('Mudar cor de fundo, Mudar cor dos textos, Mudar cor dos botões, Mudar cor dos botões no hover, Mudar cor principal, Mudar cor de erro, Voltar ao menu principal');
         addEventListenerComHistorico(opcao1, 'click', definirCorDeFundo);
         addEventListenerComHistorico(opcao2, 'click', definirCorDosTextos);
         addEventListenerComHistorico(opcao3, 'click', definirCorDosBotoes);
         addEventListenerComHistorico(opcao4, 'click', definirCorDosBotoesNoHover);
-        addEventListenerComHistorico(opcao5, 'click', voltarAoMenuPrincipal);
+        addEventListenerComHistorico(opcao5, 'click', definirCorPrincipal);
+        addEventListenerComHistorico(opcao6, 'click', definirCorDeErro);
+        addEventListenerComHistorico(opcao7, 'click', voltarAoMenuPrincipal);
         puxarBotoes();
         puxarInput();
     }, 4000);
 }
 
 function voltarAoMenuPrincipal() {
+    destacarBotaoClicado(opcao7);
+    enigma.style.transition = 'none';
     setTimeout(function () {
         acabou = true;
         sairPergunta();
@@ -280,7 +315,10 @@ function voltarAoMenuPrincipal() {
         }, 2500);
         setTimeout(function () {
             habilitarMenuPrincipal();
-        }, 3000)
+            setTimeout(() => {
+                enigma.style.transition = '';
+            }, 1000);
+        }, 3500)
     }, 1500)
 }
 
@@ -322,13 +360,13 @@ function entrarPergunta() {
         return;
     }
     removerTodososEventListeners();
-    resetarPerguntas();
-    mostrarTituloEParagrafo();
-    mostrarParagrafo();
-    criarEventoParaOpcao(opcao1, 1);
-    criarEventoParaOpcao(opcao2, 2);
-    criarEventoParaOpcao(opcao3, 3);
-    criarEventoParaOpcao(opcao4, 4);
+    setTimeout(() => {
+        if ((i >= perguntas.length) == false) {
+            resetarPerguntas();
+            mostrarTituloEParagrafo();
+            mostrarParagrafo();
+        }
+    }, 700);
 }
 
 function retirarBotoes() {
@@ -368,8 +406,28 @@ function mostrarTelaFinal() {
     nomearTitulo('Parabéns!');
     mostrarTituloEParagrafo();
     nomearBotoes('Voltar ao menu, Escolher outra versão, Configurações, Feedback');
-    addEventListenerComHistorico(opcao1, 'click', habilitarMenuPrincipal);
-    addEventListenerComHistorico(opcao3, 'click', configuracoes);
+    comecou = false;
+    acabou = true;
+}
+
+function puxarMenuPrincipal() {
+    setTimeout(function () {
+        acabou = true;
+        sairPergunta();
+        setTimeout(function () {
+            habilitarMenuPrincipal();
+        }, 3000)
+    }, 1500)
+}
+
+function puxarConfiguracoes() {
+    setTimeout(function () {
+        acabou = true;
+        sairPergunta();
+        setTimeout(function () {
+            configuracoes();
+        }, 1500)
+    }, 1500)
 }
 
 function avancarNivel() {
@@ -383,50 +441,78 @@ function avancarNivel() {
 }
 
 function sairPergunta() {
-    if (cores) {
-        return;
-    }
     retirarTituloEParagrafo();
     retirarBotoes();
-        setTimeout(function () {
-            setTimeout(function () {
-                resetarPerguntas();
-                if (comecou == false)  {
-                    enviarSinal();
-                    entrarPergunta();
-                } else {
-                    return;
-                }
-                avancarNivel();
-                setTimeout(function () {
-                    if (i >= perguntas.length) {
-                        mostrarTelaFinal();
-                        return;
-                    } else {
-                        entrarPergunta();
-                    }
-                }, 500);    
-            }, 500);
-        }, 1500);
 }
 
 function alternativaErrada(botao) {
     erro = true;
-    botao.style.backgroundColor = 'var(--cor-vermelha)';
+    botao.style.backgroundColor = 'var(--cor-de-erro)';
     pontuacao--;
 }
 
 function criarEventoParaOpcao(botao, indice) {
     botao.addEventListener('click', function () {
-            if ((respostasCertas[i] == indice) || (comecou == false)) {
-                erro = false;
-                destacarBotaoClicado(botao);
-                setTimeout(function () {
-                    sairPergunta();
-                }, 1500)
-                setTimeout(resetarBotoes, 1000);
+            if (comecou == true) {
+                if (respostasCertas[i] == indice) {
+                    erro = false;
+                    avancarNivel();
+                    destacarBotaoClicado(botao);
+                    setTimeout(function () {
+                        sairPergunta();
+                        setTimeout(() => {
+                            entrarPergunta();
+                        }, 1500);
+                    }, 1500)
+                    setTimeout(resetarBotoes, 1000);
+                } else {
+                    alternativaErrada(botao);
+                }
             } else {
-                alternativaErrada(botao);
+                if (cores == true) {
+                    return;
+                } else if (acabou == true) {
+                    destacarBotaoClicado(botao);
+                    if (botao == opcao1) {
+                        puxarMenuPrincipal();
+                    } else if (botao == opcao3) {
+                        puxarConfiguracoes();
+                    }
+                } else {
+                    destacarBotaoClicado(botao);
+                    setTimeout(function () {
+                        sairPergunta();
+                    }, 1500)
+                    setTimeout(resetarBotoes, 1000); 
+                }
             }
         }
     )};
+
+    criarEventoParaOpcao(opcao1, 1);
+    criarEventoParaOpcao(opcao2, 2);
+    criarEventoParaOpcao(opcao3, 3);
+    criarEventoParaOpcao(opcao4, 4);
+
+    function ajustarAltura() {
+        enigma.style.opacity = '0';
+        setTimeout(() => {
+            const enigmaBounds = enigma.getBoundingClientRect();
+            const contentBounds = div_botoes.getBoundingClientRect();
+            if (contentBounds.top < enigmaBounds.top || contentBounds.bottom > enigmaBounds.bottom) {
+                enigma.style.height = '100%';
+                setTimeout(() => {
+                    enigma.style.opacity = '1';
+                }, 250);
+            } else {
+                enigma.style.height = '100vh';
+                setTimeout(() => {
+                    enigma.style.opacity = '1';
+                }, 250);
+            }
+        }, 250);
+    }
+    
+    window.addEventListener('resize', ajustarAltura);
+    ajustarAltura();
+    habilitarMenuPrincipal();
