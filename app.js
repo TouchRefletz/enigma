@@ -11,6 +11,7 @@ var div_input = document.createElement('div');
 var div_tudo = document.createElement('div');
 var nivelAtual = 1;
 var eventListeners = [];
+var animacaoRemovida = false;
 var erro = false;
 var comecou = false;
 var acabou = false;
@@ -36,6 +37,18 @@ function reiniciarVariaveisDeControle() {
     cores = false;
     pontuacao = 0;
     enigma.style.opacity = '1';
+}
+
+function bloquearBotoes() {
+    opcoes.forEach(botao => {
+        botao.style.pointerEvents = 'none';
+    });
+}
+
+function desbloquearBotoes() {
+    opcoes.forEach(botao => {
+        botao.style.pointerEvents = 'auto';
+    });
 }
 
 function addEventListenerComHistorico(elemento, tipoDeEvento, funcao) {
@@ -178,33 +191,77 @@ function hoverBotao() {
 
 hoverBotao();
 
+if (animacaoRemovida) {
+    opcoes.forEach(botao => {
+        botao.style.transition = '';
+    });
+    opcoes.forEach(botao => {
+        botao.forEach(() => {
+            botao.removeEventListener('mouseenter', function () {
+                botao.style.backgroundColor = 'var(--cor-terciaria)';
+            });
+            botao.removeEventListener('mouseleave', function () {
+                botao.style.backgroundColor = 'var(--cor-secundaria)';
+            });
+        });
+    });
+}
+
 function destacarBotaoClicado(botao) {
-    var botaoClicado = botao;
-    botaoClicado.style.backgroundColor = 'var(--cor-principal)';
-    setTimeout(() => {
-        botaoClicado.style.backgroundColor = '';
-    }, 1000);
+    if (animacaoRemovida) {
+        botaoClicado.style.backgroundColor = 'var(--cor-principal)';
+        setTimeout(() => {
+            botaoClicado.style.backgroundColor = '';
+        }, 1000);
+        return;
+    } else {
+        removerTodososEventListeners();
+        bloquearBotoes();
+        var botaoClicado = botao;
+        botaoClicado.style.backgroundColor = 'var(--cor-principal)';
+        setTimeout(() => {
+            botaoClicado.style.backgroundColor = '';
+        }, 1000);
+    }
 }
 
 function puxarBotoes() {
-    opcoes.forEach(function (botao, index) {
-        setTimeout(function () {
-            botao.style.animation = 'entrada 1s ease-in-out';
+    if (animacaoRemovida) {
+        opcoes.forEach(botao => {
             botao.style.opacity = '1';
-        }, 250 * index);
-    });
+        });
+        return;
+    } else {
+        bloquearBotoes();
+        opcoes.forEach(function (botao, index) {
+            setTimeout(function () {
+                botao.style.animation = 'entrada 1s ease-in-out';
+                botao.style.opacity = '1';
+                setTimeout(() => {
+                    desbloquearBotoes();
+                }, 1500);
+            }, 250 * index);
+        });
+    }
 }
 
 function comecarEnigma(botao) {
     destacarBotaoClicado(botao);
-    setTimeout(() => {
+    if (animacaoRemovida) {
         sairPergunta();
+        reiniciarVariaveisDeControle();
+        enviarSinal();
+        entrarPergunta();
+    } else {
         setTimeout(() => {
-            reiniciarVariaveisDeControle();
-            enviarSinal();
-            entrarPergunta();
+            sairPergunta();
+            setTimeout(() => {
+                reiniciarVariaveisDeControle();
+                enviarSinal();
+                entrarPergunta();
+            }, 1500);
         }, 1500);
-    }, 1500);
+    }
 }
 
 function habilitarMenuPrincipal() {
@@ -218,7 +275,9 @@ function habilitarMenuPrincipal() {
     addEventListenerComHistorico(opcao1, 'click', function () {
         comecarEnigma(opcao1);
     });
-    addEventListenerComHistorico(opcao2, 'click', puxarConfiguracoes);
+    addEventListenerComHistorico(opcao2, 'click', function () {
+        puxarConfiguracoes(opcao2);
+    });
     addEventListenerComHistorico(opcao4, 'click', puxarFeedback);
     puxarBotoes();
 }
@@ -255,10 +314,77 @@ function configuracoes() {
         limparParagrafo();
         nomearBotoes('Mudar cores, Remover animações, Créditos, Voltar ao menu principal');
         addEventListenerComHistorico(opcao1, 'click', irParaMenuMudarCores);
+        addEventListenerComHistorico(opcao2, 'click', function () {
+            irParaMenuRemoverAnimacoes(opcao2);
+        });
         addEventListenerComHistorico(opcao3, 'click', mostrarCreditos);
-        addEventListenerComHistorico(opcao4, 'click', puxarMenuPrincipal);
+        addEventListenerComHistorico(opcao4, 'click', function () {
+            puxarMenuPrincipal(opcao4);
+        });
         puxarBotoes();
     }, 500);
+}
+
+function irParaMenuRemoverAnimacoes(botao) {
+    destacarBotaoClicado(botao);
+    setTimeout(function () {
+        sairPergunta();
+        setTimeout(function () {
+            removerAnimacoes();
+        }, 1500)
+    }, 1500)
+}
+
+function removerAnimacoes() {
+    removerTodososEventListeners();
+    removerAnimacao = true;
+    setTimeout(() => {
+        reiniciarVariaveisDeControle();
+        resetCSSNoHTML();
+        nomearTitulo('Remover Animações');
+        limparParagrafo();
+        nomearBotoes('Remover Animações, Adicionar Animações, Voltar ao menu principal');
+        addEventListenerComHistorico(opcao1, 'click', removeAnimacoes);
+        addEventListenerComHistorico(opcao2, 'click', adicionaAnimacoes);
+        addEventListenerComHistorico(opcao3, 'click', function () {
+            if (animacaoRemovida) {
+                criarBotoes(1, 'opcao4');
+                deixarBotaoNormal(opcao3);
+                puxarMenuPrincipal(opcao3);
+            } else {
+                puxarMenuPrincipal(opcao3);
+                setTimeout(() => {
+                    criarBotoes(1, 'opcao4');
+                    deixarBotaoNormal(opcao3);
+                }, 4500)
+            }
+        });
+        deixarBotaoMaior(opcao3);
+        removerBotoes(opcao4);
+        puxarBotoes();
+    }, 500);
+}
+
+function removeAnimacoes() {
+    animacaoRemovida = true;
+}
+
+function adicionaAnimacoes() {
+    animacaoRemovida = false;
+}
+
+function deixarBotaoNormal(botao) {
+    botao.classList.remove('main__botao-maior');
+    botao.classList.add('main__botao');
+}
+
+function deixarBotaoMaior(botao) {
+    botao.classList.add('main__botao-maior');
+    botao.classList.remove('main__botao');
+}
+
+function removerBotoes(botao) {
+    div_botoes.removeChild(botao);
 }
 
 function mostrarCreditos() {
@@ -329,28 +455,32 @@ function resetarPerguntas() {
 }
 
 function mostrarParagrafo() {
-    var perguntaTexto = pergunta.textContent;
-    var animacaoPergunta = perguntaTexto.split(' ');
-    limparParagrafo();
-    setTimeout(function () {
-        for (var i = 0; i < animacaoPergunta.length; i++) {
-            (function(i) {
-                var span = document.createElement('span');
-                span.textContent = animacaoPergunta[i] + ' ';
-                span.style.transition = 'all 1s ease-in-out';
-                span.classList.add('main__pergunta');
-                span.style.opacity = '0';
-                span.style.animation = 'fade-in 0.3s ease-in-out';
-                setTimeout(function () {
-                    span.style.opacity = '1';
-                    pergunta.appendChild(span);
-                }, 200 * i);
-            })(i);
-        }
-        setTimeout(function() {
-            puxarBotoes();
-        }, 200 * animacaoPergunta.length);
-    }, 500)
+    if (animacaoRemovida) {
+        return;
+    } else {
+        var perguntaTexto = pergunta.textContent;
+        var animacaoPergunta = perguntaTexto.split(' ');
+        limparParagrafo();
+        setTimeout(function () {
+            for (var i = 0; i < animacaoPergunta.length; i++) {
+                (function(i) {
+                    var span = document.createElement('span');
+                    span.textContent = animacaoPergunta[i] + ' ';
+                    span.style.transition = 'all 1s ease-in-out';
+                    span.classList.add('main__pergunta');
+                    span.style.opacity = '0';
+                    span.style.animation = 'fade-in 0.3s ease-in-out';
+                    setTimeout(function () {
+                        span.style.opacity = '1';
+                        pergunta.appendChild(span);
+                    }, 200 * i);
+                })(i);
+            }
+            setTimeout(function() {
+                puxarBotoes();
+            }, 200 * animacaoPergunta.length);
+        }, 500)
+    }
 }
 
 function entrarPergunta() {
@@ -359,45 +489,59 @@ function entrarPergunta() {
     } else if ((acabou) || (config)) {
         return;
     }
-    removerTodososEventListeners();
     setTimeout(() => {
         if ((i >= perguntas.length) == false) {
             resetarPerguntas();
             mostrarTituloEParagrafo();
             mostrarParagrafo();
+            opcoes.forEach(botao => {
+                addEventListenerComHistorico(botao, 'click', clickDoBotao);
+            });
         }
     }, 700);
 }
 
 function retirarBotoes() {
-    opcoes.forEach(function (botao, index) {
-        setTimeout(function () {
-            botao.style.animation = 'saida 1s ease-in-out';
-            botao.style.opacity = '0';
-        }, 250 * index);
-    });
+    if (animacaoRemovida) {
+        return;
+    } else {
+        opcoes.forEach(function (botao, index) {
+            setTimeout(function () {
+                botao.style.animation = 'saida 1s ease-in-out';
+                botao.style.opacity = '0';
+            }, 250 * index);
+        });
+    }
 }
 
 function retirarTituloEParagrafo() {
-    setTimeout(function () {
-        nivel.style.animation = 'saida-texto 1s ease-in-out';
-        pergunta.style.animation = 'saida-texto 1s ease-in-out';
+    if (animacaoRemovida) {
+        return;
+    } else {
         setTimeout(function () {
-            pergunta.style.opacity = '0';
-            nivel.style.opacity = '0';
-        }, 500);
-        }, 500);
+            nivel.style.animation = 'saida-texto 1s ease-in-out';
+            pergunta.style.animation = 'saida-texto 1s ease-in-out';
+            setTimeout(function () {
+                pergunta.style.opacity = '0';
+                nivel.style.opacity = '0';
+            }, 500);
+            }, 500);
+    }
 }
 
 function mostrarTituloEParagrafo() {
-    setTimeout(function () {
-        nivel.style.animation = 'entrada-texto 1s ease-in-out';
-        pergunta.style.animation = 'entrada-texto 1s ease-in-out';
+    if (animacaoRemovida) {
+        return;
+    } else {
         setTimeout(function () {
-            pergunta.style.opacity = '1';
-            nivel.style.opacity = '1';
-        }, 500);
-        }, 500);
+            nivel.style.animation = 'entrada-texto 1s ease-in-out';
+            pergunta.style.animation = 'entrada-texto 1s ease-in-out';
+            setTimeout(function () {
+                pergunta.style.opacity = '1';
+                nivel.style.opacity = '1';
+            }, 500);
+            }, 500);
+    }
 }
 
 function mostrarTelaFinal() {
@@ -406,21 +550,38 @@ function mostrarTelaFinal() {
     nomearTitulo('Parabéns!');
     mostrarTituloEParagrafo();
     nomearBotoes('Voltar ao menu, Escolher outra versão, Configurações, Feedback');
+    addEventListenerComHistorico(opcao1, 'click', function () {
+        puxarMenuPrincipal(opcao1);
+    })
+    addEventListenerComHistorico(opcao3, 'click', function () {
+        puxarConfiguracoes(opcao3);
+    })
+    addEventListenerComHistorico(opcao4, 'click', puxarFeedback)
     comecou = false;
     acabou = true;
 }
 
-function puxarMenuPrincipal() {
-    setTimeout(function () {
+function puxarMenuPrincipal(botao) {
+    destacarBotaoClicado(botao);
+    if (animacaoRemovida) {
         acabou = true;
         sairPergunta();
+        habilitarMenuPrincipal();
+        desbloquearBotoes();
+        return;
+    } else {
         setTimeout(function () {
-            habilitarMenuPrincipal();
-        }, 3000)
-    }, 1500)
+            acabou = true;
+            sairPergunta();
+            setTimeout(function () {
+                habilitarMenuPrincipal();
+            }, 3000)
+        }, 1500)
+    }
 }
 
-function puxarConfiguracoes() {
+function puxarConfiguracoes(botao) {
+    destacarBotaoClicado(botao);
     setTimeout(function () {
         acabou = true;
         sairPergunta();
@@ -446,53 +607,34 @@ function sairPergunta() {
 }
 
 function alternativaErrada(botao) {
+    var alternativaErrada = botao;
     erro = true;
-    botao.style.backgroundColor = 'var(--cor-de-erro)';
+    alternativaErrada.style.backgroundColor = 'var(--cor-de-erro)';
     pontuacao--;
 }
 
-function criarEventoParaOpcao(botao, indice) {
-    botao.addEventListener('click', function () {
-            if (comecou == true) {
-                if (respostasCertas[i] == indice) {
-                    erro = false;
-                    avancarNivel();
-                    destacarBotaoClicado(botao);
-                    setTimeout(function () {
-                        sairPergunta();
-                        setTimeout(() => {
-                            entrarPergunta();
-                        }, 1500);
-                    }, 1500)
-                    setTimeout(resetarBotoes, 1000);
-                } else {
-                    alternativaErrada(botao);
-                }
-            } else {
-                if (cores == true) {
-                    return;
-                } else if (acabou == true) {
-                    destacarBotaoClicado(botao);
-                    if (botao == opcao1) {
-                        puxarMenuPrincipal();
-                    } else if (botao == opcao3) {
-                        puxarConfiguracoes();
-                    }
-                } else {
-                    destacarBotaoClicado(botao);
-                    setTimeout(function () {
-                        sairPergunta();
-                    }, 1500)
-                    setTimeout(resetarBotoes, 1000); 
-                }
-            }
-        }
-    )};
+function puxarProximaPergunta(botao, indice) {
+    if (respostasCertas[i] == indice) {
+        erro = false;
+        avancarNivel();
+        destacarBotaoClicado(botao);
+        setTimeout(function () {
+            sairPergunta();
+            setTimeout(() => {
+                entrarPergunta();
+            }, 1500);
+        }, 1500)
+        setTimeout(resetarBotoes, 1000);
+    } else {
+        alternativaErrada(botao);
+    }
+}
 
-    criarEventoParaOpcao(opcao1, 1);
-    criarEventoParaOpcao(opcao2, 2);
-    criarEventoParaOpcao(opcao3, 3);
-    criarEventoParaOpcao(opcao4, 4);
+function clickDoBotao(botao) {
+    var botaoClicado = botao.target;
+    var indice = botao.target.id.split('-')[1];
+    puxarProximaPergunta(botaoClicado, indice);
+}
 
     function ajustarAltura() {
         enigma.style.opacity = '0';
