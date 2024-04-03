@@ -69,6 +69,12 @@ function resetCSSNoHTML() {
     opcoes.forEach(function(opcao) {
         opcao.style.cssText = '';
     });
+    if (animacaoRemovida) {
+        removeTransicoes();
+        opcoes.forEach(function(opcao) {
+            opcao.style.opacity = '1';
+        });
+    }
 }
 
 function nomearTitulo(nome) {
@@ -191,38 +197,24 @@ function hoverBotao() {
 
 hoverBotao();
 
-if (animacaoRemovida) {
-    opcoes.forEach(botao => {
-        botao.style.transition = '';
-    });
-    opcoes.forEach(botao => {
-        botao.forEach(() => {
-            botao.removeEventListener('mouseenter', function () {
-                botao.style.backgroundColor = 'var(--cor-terciaria)';
-            });
-            botao.removeEventListener('mouseleave', function () {
-                botao.style.backgroundColor = 'var(--cor-secundaria)';
-            });
+function removeTransicoes() {
+    var opcoes = document.querySelectorAll('.main__botao');
+        opcoes.forEach(botao => {
+            botao.style.transition = 'none';
         });
-    });
 }
 
 function destacarBotaoClicado(botao) {
-    if (animacaoRemovida) {
-        botaoClicado.style.backgroundColor = 'var(--cor-principal)';
-        setTimeout(() => {
-            botaoClicado.style.backgroundColor = '';
-        }, 1000);
-        return;
-    } else {
         removerTodososEventListeners();
+        if (animacaoRemovida == true) {
+           return;
+        }
         bloquearBotoes();
         var botaoClicado = botao;
         botaoClicado.style.backgroundColor = 'var(--cor-principal)';
         setTimeout(() => {
             botaoClicado.style.backgroundColor = '';
         }, 1000);
-    }
 }
 
 function puxarBotoes() {
@@ -248,7 +240,6 @@ function puxarBotoes() {
 function comecarEnigma(botao) {
     destacarBotaoClicado(botao);
     if (animacaoRemovida) {
-        sairPergunta();
         reiniciarVariaveisDeControle();
         enviarSinal();
         entrarPergunta();
@@ -278,6 +269,9 @@ function habilitarMenuPrincipal() {
     addEventListenerComHistorico(opcao2, 'click', function () {
         puxarConfiguracoes(opcao2);
     });
+    addEventListenerComHistorico(opcao3, 'click', function () {
+        puxarVersoes(opcao3);
+    });
     addEventListenerComHistorico(opcao4, 'click', puxarFeedback);
     puxarBotoes();
 }
@@ -287,18 +281,27 @@ function enviarSinal() {
 }
 
 function puxarFeedback() {
+    if (animacaoRemovida) {
+        window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSezlu_qzMfavu-fHJdHLMeIe6Sknq006YStxnE5ElU8GOF8gQ/viewform?usp=sf_link';
+    }
     setTimeout(() => {
         window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSezlu_qzMfavu-fHJdHLMeIe6Sknq006YStxnE5ElU8GOF8gQ/viewform?usp=sf_link';
     }, 4000);
 }
 
 function puxarLinktree() {
+    if (animacaoRemovida) {
+        window.location.href = 'https://linktr.ee/ToqueReflexo';
+    }
     setTimeout(() => {
         window.location.href = 'https://linktr.ee/ToqueReflexo';
     }, 4000);
 }
 
 function puxarGithub() {
+    if (animacaoRemovida) {
+        window.location.href = 'https://github.com/TouchRefletz';
+    }
     setTimeout(() => {
         window.location.href = 'https://github.com/TouchRefletz';
     }, 4000);
@@ -307,6 +310,23 @@ function puxarGithub() {
 function configuracoes() {
     removerTodososEventListeners();
     config = true;
+    if (animacaoRemovida) {
+        reiniciarVariaveisDeControle();
+        resetCSSNoHTML();
+        nomearTitulo('Configurações');
+        limparParagrafo();
+        nomearBotoes('Mudar cores, Remover animações, Créditos, Voltar ao menu principal');
+        desbloquearBotoes();
+        addEventListenerComHistorico(opcao1, 'click', irParaMenuMudarCores);
+        addEventListenerComHistorico(opcao2, 'click', function () {
+            irParaMenuRemoverAnimacoes(opcao2);
+        });
+        addEventListenerComHistorico(opcao3, 'click', mostrarCreditos);
+        addEventListenerComHistorico(opcao4, 'click', function () {
+            puxarMenuPrincipal(opcao4);
+        });
+        return;
+    }
     setTimeout(() => {
         reiniciarVariaveisDeControle();
         resetCSSNoHTML();
@@ -337,24 +357,26 @@ function irParaMenuRemoverAnimacoes(botao) {
 
 function removerAnimacoes() {
     removerTodososEventListeners();
-    removerAnimacao = true;
     setTimeout(() => {
         reiniciarVariaveisDeControle();
         resetCSSNoHTML();
         nomearTitulo('Remover Animações');
         limparParagrafo();
         nomearBotoes('Remover Animações, Adicionar Animações, Voltar ao menu principal');
-        addEventListenerComHistorico(opcao1, 'click', removeAnimacoes);
+        addEventListenerComHistorico(opcao1, 'click', function () {
+            removeAnimacoes();
+            removeTransicoes();
+        });
         addEventListenerComHistorico(opcao2, 'click', adicionaAnimacoes);
         addEventListenerComHistorico(opcao3, 'click', function () {
             if (animacaoRemovida) {
-                criarBotoes(1, 'opcao4');
+                criarBotoes(1, 'opcao-4');
                 deixarBotaoNormal(opcao3);
                 puxarMenuPrincipal(opcao3);
             } else {
                 puxarMenuPrincipal(opcao3);
                 setTimeout(() => {
-                    criarBotoes(1, 'opcao4');
+                    criarBotoes(1, 'opcao-4');
                     deixarBotaoNormal(opcao3);
                 }, 4500)
             }
@@ -389,6 +411,22 @@ function removerBotoes(botao) {
 
 function mostrarCreditos() {
     removerTodososEventListeners();
+    if (animacaoRemovida) {
+        resetCSSNoHTML();
+        nomearTitulo('Créditos');
+        limparParagrafo();
+        pergunta.innerHTML = 'Site desenvolvido por Willian Campos Costa.';
+        mostrarParagrafo();
+        nomearBotoes('Redes Sociais (Linktree), GIthub, Feedback, Voltar ao menu principal');
+        addEventListenerComHistorico(opcao1, 'click', puxarLinktree);
+        addEventListenerComHistorico(opcao2, 'click', puxarGithub);
+        addEventListenerComHistorico(opcao3, 'click', puxarFeedback);
+        addEventListenerComHistorico(opcao4, 'click', puxarMenuPrincipal);
+        puxarBotoes();
+        puxarInput();
+        desbloquearBotoes();
+        return;
+    }
     setTimeout (function () {
         resetCSSNoHTML();
         nomearTitulo('Créditos');
@@ -407,6 +445,32 @@ function mostrarCreditos() {
 
 function irParaMenuMudarCores() {
     removerTodososEventListeners();
+    if (animacaoRemovida) {
+        cores = true;
+        criarInput();
+        criarDivTudo();
+        colocarBotoesNaDivTudo();
+        resetCSSNoHTML();
+        nomearTitulo('Mudar cores');
+        limparParagrafo();
+        criarBotoes(3, 'opcao5, opcao6, opcao7');
+        nomearBotoes('Mudar cor de fundo, Mudar cor dos textos, Mudar cor dos botões, Mudar cor dos botões no hover, Mudar cor principal, Mudar cor de erro, Voltar ao menu principal');
+        desbloquearBotoes();
+        addEventListenerComHistorico(opcao1, 'click', definirCorDeFundo);
+        addEventListenerComHistorico(opcao2, 'click', definirCorDosTextos);
+        addEventListenerComHistorico(opcao3, 'click', definirCorDosBotoes);
+        addEventListenerComHistorico(opcao4, 'click', definirCorDosBotoesNoHover);
+        addEventListenerComHistorico(opcao5, 'click', definirCorPrincipal);
+        addEventListenerComHistorico(opcao6, 'click', definirCorDeErro);
+        addEventListenerComHistorico(opcao7, 'click', voltarAoMenuPrincipal);
+        puxarBotoes();
+        removeTransicoes();
+        input.style.opacity = '1';
+        input.style.pointerEvents = 'auto';
+        opcao7.classList.add('main__botao-maior');
+        opcao7.classList.remove('main__botao');
+        return;
+    }
     setTimeout (function () {
         cores = true;
         criarInput();
@@ -426,10 +490,21 @@ function irParaMenuMudarCores() {
         addEventListenerComHistorico(opcao7, 'click', voltarAoMenuPrincipal);
         puxarBotoes();
         puxarInput();
+        input.style.pointerEvents = 'auto';
+        opcao7.classList.add('.main__botao-maior');
+        opcao7.classList.remove('.main__botao');
     }, 4000);
 }
 
 function voltarAoMenuPrincipal() {
+    if (animacaoRemovida) {
+        acabou = true;
+        removerInput();
+        desfazerDivsDasCores();
+        habilitarMenuPrincipal();
+        desbloquearBotoes();
+        return;
+    }
     destacarBotaoClicado(opcao7);
     enigma.style.transition = 'none';
     setTimeout(function () {
@@ -489,6 +564,17 @@ function entrarPergunta() {
     } else if ((acabou) || (config)) {
         return;
     }
+    if (animacaoRemovida) {
+        if ((i >= perguntas.length) == false) {
+            resetarPerguntas();
+            mostrarTituloEParagrafo();
+            mostrarParagrafo();
+            opcoes.forEach(botao => {
+                addEventListenerComHistorico(botao, 'click', clickDoBotao);
+            });
+        }
+        return;
+    }
     setTimeout(() => {
         if ((i >= perguntas.length) == false) {
             resetarPerguntas();
@@ -545,6 +631,9 @@ function mostrarTituloEParagrafo() {
 }
 
 function mostrarTelaFinal() {
+    if (animacaoRemovida) {
+        removerTodososEventListeners();
+    }
     pergunta.innerHTML = `Você respondeu todas as perguntas corretamente. Sua pontuação foi de ${pontuacao}.`;
     mostrarParagrafo();
     nomearTitulo('Parabéns!');
@@ -581,6 +670,11 @@ function puxarMenuPrincipal(botao) {
 }
 
 function puxarConfiguracoes(botao) {
+    if (animacaoRemovida) {
+        acabou = true;
+        configuracoes();
+        return;
+    }
     destacarBotaoClicado(botao);
     setTimeout(function () {
         acabou = true;
@@ -589,6 +683,133 @@ function puxarConfiguracoes(botao) {
             configuracoes();
         }, 1500)
     }, 1500)
+}
+
+function puxarVersoes(botao) {
+    if (animacaoRemovida) {
+        versoes();
+        return;
+    }
+    destacarBotaoClicado(botao);
+    setTimeout(function () {
+        sairPergunta();
+        setTimeout(function () {
+            versoes();
+        }, 1500)
+    }, 1500)
+}
+
+function versoes() {
+    removerTodososEventListeners();
+    if (animacaoRemovida) {
+        resetCSSNoHTML();
+        nomearTitulo('Versões');
+        limparParagrafo();
+        pergunta.innerHTML = 'Escolha uma outra versão/tema do enigma.';
+        mostrarParagrafo();
+        criarBotoes(1, 'opcao5');
+        nomearBotoes('Perguntas Gerais, ToqueReflexo, Escola, Matemática, Voltar ao menu principal');
+        addEventListenerComHistorico(opcao1, 'click', trocarPerguntasParaPadrao);
+        addEventListenerComHistorico(opcao2, 'click', trocarPerguntasParaDoMeuCanal);
+        addEventListenerComHistorico(opcao3, 'click', trocarPerguntasParaDaEscola);
+        addEventListenerComHistorico(opcao4, 'click', trocarPerguntasParaDeMatematica);
+        addEventListenerComHistorico(opcao5, 'click', () => {
+            puxarMenuPrincipal(opcao5);
+            div_botoes.removeChild(opcao5);
+            div_botoes.style.display = 'grid';
+            div_botoes.style.flexDirection = '';
+            div_botoes.style.width = '50%';
+        });
+        opcao5.classList.add('main__botao-maior');
+        opcao5.classList.remove('main__botao');
+        opcoes.forEach(botao => {
+            botao.style.margin = '1%';
+        });
+        div_botoes.style.display = 'flex';
+        div_botoes.style.flexDirection = 'column';
+        puxarBotoes();
+        removeTransicoes();
+        desbloquearBotoes();
+        return;
+    }
+    setTimeout (function () {
+        resetCSSNoHTML();
+        nomearTitulo('Versões');
+        limparParagrafo();
+        pergunta.innerHTML = 'Escolha uma outra versão/tema do enigma.';
+        mostrarParagrafo();
+        criarBotoes(1, 'opcao5');
+        nomearBotoes('Perguntas Gerais, ToqueReflexo, Escola, Matemática, Voltar ao menu principal');
+        addEventListenerComHistorico(opcao1, 'click', trocarPerguntasParaPadrao);
+        addEventListenerComHistorico(opcao2, 'click', trocarPerguntasParaDoMeuCanal);
+        addEventListenerComHistorico(opcao3, 'click', trocarPerguntasParaDaEscola);
+        addEventListenerComHistorico(opcao4, 'click', trocarPerguntasParaDeMatematica);
+        addEventListenerComHistorico(opcao5, 'click', () => {
+            puxarMenuPrincipal(opcao5);
+            setTimeout(() => {
+                div_botoes.removeChild(opcao5);
+                div_botoes.style.display = 'grid';
+                div_botoes.style.flexDirection = '';
+                div_botoes.style.width = '50%';
+            }, 3500);
+        });
+        opcao5.classList.add('main__botao-maior');
+        opcao5.classList.remove('main__botao');
+        puxarBotoes();
+        opcoes.forEach(botao => {
+            botao.style.margin = '1%';
+        });
+        div_botoes.style.display = 'flex';
+        div_botoes.style.flexDirection = 'column';
+    }, 1000);
+}
+
+function trocarPerguntasParaPadrao() {
+    perguntas = [
+        'Qual foi, por muito tempo, o meu jogo favorito?',
+    ];
+    respostas = [
+        'Fortnite, Roblox, Minecraft, Subway Surfers',
+    ]
+    respostasCertas = [
+        1,
+    ]
+}
+
+function trocarPerguntasParaDoMeuCanal() {
+    perguntas = [
+        'Outro tipo de pergunta',
+    ];
+    respostas = [
+        'Fortnite, Outra alternativa, Minecraft, Subway Surfers',
+    ]
+    respostasCertas = [
+        2,
+    ]
+}
+
+function trocarPerguntasParaDeMatematica() {
+    perguntas = [
+        'Outro Outro Outro tipo de pergunta',
+    ];
+    respostas = [
+        'Fortnite, Outra alternativa, Miles Morales, CPF',
+    ]
+    respostasCertas = [
+        2,
+    ]
+}
+
+function trocarPerguntasParaDaEscola() {
+    perguntas = [
+        'Outro Outro tipo de pergunta',
+    ];
+    respostas = [
+        'Fortnite, Outra alternativa, Miles Morales, Subway Surfers',
+    ]
+    respostasCertas = [
+        2,
+    ]
 }
 
 function avancarNivel() {
@@ -614,6 +835,17 @@ function alternativaErrada(botao) {
 }
 
 function puxarProximaPergunta(botao, indice) {
+    if (animacaoRemovida) {
+        if (respostasCertas[i] == indice) {
+            erro = false;
+            avancarNivel();
+            entrarPergunta();
+            resetarBotoes();
+        } else {
+            alternativaErrada(botao);
+        }
+        return;
+    }
     if (respostasCertas[i] == indice) {
         erro = false;
         avancarNivel();
