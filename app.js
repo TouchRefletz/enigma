@@ -21,14 +21,41 @@ var input = document.createElement('input');
 var i = 0;
 var pontuacao = 0;
 var perguntas = [
-    'Qual foi, por muito tempo, o meu jogo favorito?',
+    'Quais o menor e o maior país do mundo?',
+    'Qual o livro mais vendido no mundo a seguir à Bíblia?',
+    'Quantas casas decimais tem o número pi?',
+    'Atualmente, quantos elementos químicos a tabela periódica possui?',
+    'Quais os países que têm a maior e a menor expectativa de vida do mundo?',
+    'O que a palavra "legend" significa em português?',
+    'Quais as duas datas que são comemoradas em novembro?',
+    'Quem pintou a "Mona Lisa"?',
+    'Quanto tempo a luz do Sol demora para chegar à Terra?',
+    'Em que ordem surgiram os modelos atômicos?',
 ];
 var respostas = [
-    'Fortnite, Roblox, Minecraft, Subway Surfers',
-]
+    'Vaticano e Rússia, Nauru e China, Mônaco e Canadá, Malta e Estados Unidos',
+    'O Senhor dos Anéis, Dom Quixote, O Pequeno Príncipe, Ela, a Feiticeira',
+    'Duas, Centenas, Infinitas, Milhares',
+    '113, 109, 108, 118',
+    'Japão e Serra Leoa, Austrália e Afeganistão, Itália e Chade, Brasil e Congo',
+    'Legenda, Conto, História, Lenda',
+    'Independência do Brasil e Dia da Bandeira, Proclamação da República e Dia Nacional da Consciência Negra, Dia do Médico e Dia de São Lucas, Dia de Finados e Dia Nacional do Livro',
+    'Leonardo da Vinci, Michelangelo, Vincent van Gogh, Pablo Picasso',
+    '12 minutos, 1 dia, 12 horas, 8 minutos',
+    'Thomson/Dalton/Rutherford/Rutherford-Bohr, Rutherford-Bohr/Rutherford/Thomson/Dalton, Dalton/Thomson/Rutherford/Rutherford-Bohr, Dalton/Thomson/Rutherford-Bohr/Rutherford',
+];
 var respostasCertas = [
+    0,
     1,
-]
+    2,
+    3,
+    0,
+    3,
+    1,
+    0,
+    3,
+    2,
+];
 
 function reiniciarVariaveisDeControle() {
     i = 0;
@@ -642,6 +669,9 @@ function mostrarTelaFinal() {
     addEventListenerComHistorico(opcao1, 'click', function () {
         puxarMenuPrincipal(opcao1);
     })
+    addEventListenerComHistorico(opcao2, 'click', function () {
+        puxarVersoes(opcao2);
+    })
     addEventListenerComHistorico(opcao3, 'click', function () {
         puxarConfiguracoes(opcao3);
     })
@@ -766,14 +796,41 @@ function versoes() {
 
 function trocarPerguntasParaPadrao() {
     perguntas = [
-        'Qual foi, por muito tempo, o meu jogo favorito?',
+        'Quais o menor e o maior país do mundo?',
+        'Qual o livro mais vendido no mundo a seguir à Bíblia?',
+        'Quantas casas decimais tem o número pi?',
+        'Atualmente, quantos elementos químicos a tabela periódica possui?',
+        'Quais os países que têm a maior e a menor expectativa de vida do mundo?',
+        'O que a palavra "legend" significa em português?',
+        'Quais as duas datas que são comemoradas em novembro?',
+        'Quem pintou a "Mona Lisa"?',
+        'Quanto tempo a luz do Sol demora para chegar à Terra?',
+        'Em que ordem surgiram os modelos atômicos?',
     ];
     respostas = [
-        'Fortnite, Roblox, Minecraft, Subway Surfers',
-    ]
+        'Vaticano e Rússia, Nauru e China, Mônaco e Canadá, Malta e Estados Unidos',
+        'O Senhor dos Anéis, Dom Quixote, O Pequeno Príncipe, Ela, a Feiticeira',
+        'Duas, Centenas, Infinitas, Milhares',
+        '113, 109, 108, 118',
+        'Japão e Serra Leoa, Austrália e Afeganistão, Itália e Chade, Brasil e Congo',
+        'Legenda, Conto, História, Lenda',
+        'Independência do Brasil e Dia da Bandeira, Proclamação da República e Dia Nacional da Consciência Negra, Dia do Médico e Dia de São Lucas, Dia de Finados e Dia Nacional do Livro',
+        'Leonardo da Vinci, Michelangelo, Vincent van Gogh, Pablo Picasso',
+        '12 minutos, 1 dia, 12 horas, 8 minutos',
+        'Thomson/Dalton/Rutherford/Rutherford-Bohr, Rutherford-Bohr/Rutherford/Thomson/Dalton, Dalton/Thomson/Rutherford/Rutherford-Bohr, Dalton/Thomson/Rutherford-Bohr/Rutherford',
+    ];
     respostasCertas = [
+        0,
         1,
-    ]
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        3,
+        2,
+    ];
 }
 
 function trocarPerguntasParaDoMeuCanal() {
@@ -836,7 +893,7 @@ function alternativaErrada(botao) {
 
 function puxarProximaPergunta(botao, indice) {
     if (animacaoRemovida) {
-        if (respostasCertas[i] == indice) {
+        if (respostasCertas[i] == (indice - 1)) {
             erro = false;
             avancarNivel();
             entrarPergunta();
@@ -846,7 +903,7 @@ function puxarProximaPergunta(botao, indice) {
         }
         return;
     }
-    if (respostasCertas[i] == indice) {
+    if (respostasCertas[i] == (indice - 1)) {
         erro = false;
         avancarNivel();
         destacarBotaoClicado(botao);
