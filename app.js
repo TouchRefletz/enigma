@@ -258,6 +258,7 @@ function puxarBotoes() {
                 botao.style.opacity = '1';
                 setTimeout(() => {
                     desbloquearBotoes();
+                    ajustarAltura();
                 }, 1500);
             }, 250 * index);
         });
@@ -830,9 +831,9 @@ function versoes() {
         addEventListenerComHistorico(opcao5, 'click', () => {
             puxarMenuPrincipal(opcao5);
             div_botoes.removeChild(opcao5);
-            div_botoes.style.display = 'grid';
             div_botoes.style.flexDirection = '';
             div_botoes.style.width = '';
+            div_botoes.style.display = '';
         });
         opcao5.classList.add('main__botao-maior');
         opcao5.classList.remove('main__botao');
@@ -862,9 +863,9 @@ function versoes() {
             puxarMenuPrincipal(opcao5);
             setTimeout(() => {
                 div_botoes.removeChild(opcao5);
-                div_botoes.style.display = 'grid';
                 div_botoes.style.flexDirection = '';
                 div_botoes.style.width = '';
+                div_botoes.style.display = '';
             }, 3500);
         });
         opcao5.classList.add('main__botao-maior');
