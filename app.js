@@ -34,7 +34,7 @@ var perguntas = [
 ];
 var respostas = [
     'Vaticano e Rússia, Nauru e China, Mônaco e Canadá, Malta e Estados Unidos',
-    'O Senhor dos Anéis, Dom Quixote, O Pequeno Príncipe, Ela, a Feiticeira',
+    'O Senhor dos Anéis, Dom Quixote, O Pequeno Príncipe, Ela,a Feiticeira',
     'Duas, Centenas, Infinitas, Milhares',
     '113, 109, 108, 118',
     'Japão e Serra Leoa, Austrália e Afeganistão, Itália e Chade, Brasil e Congo',
@@ -299,7 +299,10 @@ function habilitarMenuPrincipal() {
     addEventListenerComHistorico(opcao3, 'click', function () {
         puxarVersoes(opcao3);
     });
-    addEventListenerComHistorico(opcao4, 'click', puxarFeedback);
+    addEventListenerComHistorico(opcao4, 'click', () => {
+        puxarRedirecionamentos(opcao4);
+        puxarFeedback();
+    })
     puxarBotoes();
 }
 
@@ -344,11 +347,15 @@ function configuracoes() {
         limparParagrafo();
         nomearBotoes('Mudar cores, Remover animações, Créditos, Voltar ao menu principal');
         desbloquearBotoes();
-        addEventListenerComHistorico(opcao1, 'click', irParaMenuMudarCores);
+        addEventListenerComHistorico(opcao1, 'click', () => {
+            puxarMenuMudarCores(opcao1);
+        });
         addEventListenerComHistorico(opcao2, 'click', function () {
             irParaMenuRemoverAnimacoes(opcao2);
         });
-        addEventListenerComHistorico(opcao3, 'click', mostrarCreditos);
+        addEventListenerComHistorico(opcao3, 'click', () => {
+            puxarCreditos(opcao3);
+        });
         addEventListenerComHistorico(opcao4, 'click', function () {
             puxarMenuPrincipal(opcao4);
         });
@@ -360,11 +367,15 @@ function configuracoes() {
         nomearTitulo('Configurações');
         limparParagrafo();
         nomearBotoes('Mudar cores, Remover animações, Créditos, Voltar ao menu principal');
-        addEventListenerComHistorico(opcao1, 'click', irParaMenuMudarCores);
+        addEventListenerComHistorico(opcao1, 'click', () => {
+            puxarMenuMudarCores(opcao1);
+        });
         addEventListenerComHistorico(opcao2, 'click', function () {
             irParaMenuRemoverAnimacoes(opcao2);
         });
-        addEventListenerComHistorico(opcao3, 'click', mostrarCreditos);
+        addEventListenerComHistorico(opcao3, 'click', () => {
+            puxarCreditos(opcao3);
+        });
         addEventListenerComHistorico(opcao4, 'click', function () {
             puxarMenuPrincipal(opcao4);
         });
@@ -447,30 +458,68 @@ function mostrarCreditos() {
         pergunta.innerHTML = 'Site desenvolvido por Willian Campos Costa.';
         mostrarParagrafo();
         nomearBotoes('Redes Sociais (Linktree), GIthub, Feedback, Voltar ao menu principal');
-        addEventListenerComHistorico(opcao1, 'click', puxarLinktree);
-        addEventListenerComHistorico(opcao2, 'click', puxarGithub);
-        addEventListenerComHistorico(opcao3, 'click', puxarFeedback);
-        addEventListenerComHistorico(opcao4, 'click', puxarMenuPrincipal);
+        addEventListenerComHistorico(opcao1, 'click', () => {
+            puxarRedirecionamentos(opcao1);
+            puxarLinktree();
+        })
+        addEventListenerComHistorico(opcao2, 'click', () => {
+            puxarRedirecionamentos(opcao2);
+            puxarGithub();
+        })
+        addEventListenerComHistorico(opcao3, 'click', () => {
+            puxarRedirecionamentos(opcao3);
+            puxarFeedback();
+        })
+        addEventListenerComHistorico(opcao4, 'click', () => {
+            puxarMenuPrincipal(opcao4);
+        });
         puxarBotoes();
         puxarInput();
         desbloquearBotoes();
         return;
     }
-    setTimeout (function () {
         resetCSSNoHTML();
         nomearTitulo('Créditos');
         limparParagrafo();
         pergunta.innerHTML = 'Site desenvolvido por Willian Campos Costa.';
         mostrarParagrafo();
         nomearBotoes('Redes Sociais (Linktree), GIthub, Feedback, Voltar ao menu principal');
-        addEventListenerComHistorico(opcao1, 'click', puxarLinktree);
-        addEventListenerComHistorico(opcao2, 'click', puxarGithub);
-        addEventListenerComHistorico(opcao3, 'click', puxarFeedback);
-        addEventListenerComHistorico(opcao4, 'click', puxarMenuPrincipal);
+        addEventListenerComHistorico(opcao1, 'click', () => {
+            puxarRedirecionamentos(opcao1);
+            puxarLinktree();
+        })
+        addEventListenerComHistorico(opcao2, 'click', () => {
+            puxarRedirecionamentos(opcao2);
+            puxarGithub();
+        })
+        addEventListenerComHistorico(opcao3, 'click', () => {
+            puxarRedirecionamentos(opcao3);
+            puxarFeedback();
+        })
+        addEventListenerComHistorico(opcao4, 'click', () => {
+            puxarMenuPrincipal(opcao4);
+        });
         puxarBotoes();
         puxarInput();
-    }, 4000);
 }
+
+function puxarMenuMudarCores(botao) {
+        destacarBotaoClicado(botao);
+        if (animacaoRemovida) {
+            sairPergunta();
+            irParaMenuMudarCores();
+            desbloquearBotoes();
+            return;
+        } else {
+            setTimeout(function () {
+                acabou = true;
+                sairPergunta();
+                setTimeout(function () {
+                    irParaMenuMudarCores();
+                }, 3000)
+            }, 1500)
+        }
+    }
 
 function irParaMenuMudarCores() {
     removerTodososEventListeners();
@@ -498,9 +547,9 @@ function irParaMenuMudarCores() {
         input.style.pointerEvents = 'auto';
         opcao7.classList.add('main__botao-maior');
         opcao7.classList.remove('main__botao');
+        ajustarAltura();
         return;
     }
-    setTimeout (function () {
         cores = true;
         criarInput();
         criarDivTudo();
@@ -522,13 +571,25 @@ function irParaMenuMudarCores() {
         input.style.pointerEvents = 'auto';
         opcao7.classList.add('.main__botao-maior');
         opcao7.classList.remove('.main__botao');
-    }, 4000);
+        ajustarAltura();
+}
+
+function puxarRedirecionamentos(botao) {
+    if (animacaoRemovida) {
+        return;
+    } else {
+        destacarBotaoClicado(botao);
+        setTimeout(function () {
+            sairPergunta();
+        }, 1500)
+    }
 }
 
 function voltarAoMenuPrincipal() {
     if (animacaoRemovida) {
         acabou = true;
         removerInput();
+        ajustarAltura();
         desfazerDivsDasCores();
         habilitarMenuPrincipal();
         desbloquearBotoes();
@@ -545,6 +606,7 @@ function voltarAoMenuPrincipal() {
         }, 2500);
         setTimeout(function () {
             habilitarMenuPrincipal();
+            ajustarAltura();
             setTimeout(() => {
                 enigma.style.transition = '';
             }, 1000);
@@ -677,7 +739,10 @@ function mostrarTelaFinal() {
     addEventListenerComHistorico(opcao3, 'click', function () {
         puxarConfiguracoes(opcao3);
     })
-    addEventListenerComHistorico(opcao4, 'click', puxarFeedback)
+    addEventListenerComHistorico(opcao4, 'click', () => {
+        puxarRedirecionamentos(opcao4);
+        puxarFeedback();
+    })
     comecou = false;
     acabou = true;
 }
@@ -696,6 +761,23 @@ function puxarMenuPrincipal(botao) {
             sairPergunta();
             setTimeout(function () {
                 habilitarMenuPrincipal();
+            }, 3000)
+        }, 1500)
+    }
+}
+
+function puxarCreditos(botao) {
+    destacarBotaoClicado(botao);
+    if (animacaoRemovida) {
+        sairPergunta();
+        mostrarCreditos();
+        desbloquearBotoes();
+        return;
+    } else {
+        setTimeout(function () {
+            sairPergunta();
+            setTimeout(function () {
+                mostrarCreditos();
             }, 3000)
         }, 1500)
     }
@@ -812,7 +894,7 @@ function trocarPerguntasParaPadrao() {
     ];
     respostas = [
         'Vaticano e Rússia, Nauru e China, Mônaco e Canadá, Malta e Estados Unidos',
-        'O Senhor dos Anéis, Dom Quixote, O Pequeno Príncipe, Ela, a Feiticeira',
+        'O Senhor dos Anéis, Dom Quixote, O Pequeno Príncipe, Ela,a Feiticeira',
         'Duas, Centenas, Infinitas, Milhares',
         '113, 109, 108, 118',
         'Japão e Serra Leoa, Austrália e Afeganistão, Itália e Chade, Brasil e Congo',

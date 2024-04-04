@@ -42,6 +42,7 @@ body {
     font-size: var(--tamanho-fonte-titulo);
     animation: entrada-texto 1s ease-in-out;
     transition: all 1s ease-in-out;
+    text-align: center;
 }
 
 .main__pergunta {
@@ -75,11 +76,6 @@ body {
     grid-column: span 2;
     margin: 5% 2.5%;
   }
-
-.main__botao:hover, .main__botao-maior:hover {
-    background-color: var(--cor-terciaria);
-    transform: scale(1.1);
-}
 
 .main__div-botoes {
     display: grid;
@@ -170,6 +166,13 @@ body {
     } to {
         opacity: 1;
     }
+}
+
+@media (min-width: 1000px) {
+    .main__botao:hover, .main__botao-maior:hover {
+        background-color: var(--cor-terciaria);
+        transform: scale(1.1);
+    }  
 }
 
 @media (max-width: 1000px) {
