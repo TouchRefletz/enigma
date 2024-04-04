@@ -415,10 +415,12 @@ function removerAnimacoes() {
 }
 
 function removeAnimacoes() {
+    pergunta.innerHTML = 'Animações Removidas.';
     animacaoRemovida = true;
 }
 
 function adicionaAnimacoes() {
+    pergunta.innerHTML = 'Animações Adicionadas.';
     animacaoRemovida = false;
 }
 
@@ -735,20 +737,20 @@ function versoes() {
         resetCSSNoHTML();
         nomearTitulo('Versões');
         limparParagrafo();
-        pergunta.innerHTML = 'Escolha uma outra versão/tema do enigma.';
+        pergunta.innerHTML = 'Escolha uma outra versão/tema do enigma. Padrão: Perguntas Gerais';
         mostrarParagrafo();
         criarBotoes(1, 'opcao5');
-        nomearBotoes('Perguntas Gerais, ToqueReflexo, Escola, Matemática, Voltar ao menu principal');
+        nomearBotoes('Perguntas Gerais, ToqueReflexo, Jogos, Matemática, Voltar ao menu principal');
         addEventListenerComHistorico(opcao1, 'click', trocarPerguntasParaPadrao);
         addEventListenerComHistorico(opcao2, 'click', trocarPerguntasParaDoMeuCanal);
-        addEventListenerComHistorico(opcao3, 'click', trocarPerguntasParaDaEscola);
+        addEventListenerComHistorico(opcao3, 'click', trocarPerguntasParaDeJogos);
         addEventListenerComHistorico(opcao4, 'click', trocarPerguntasParaDeMatematica);
         addEventListenerComHistorico(opcao5, 'click', () => {
             puxarMenuPrincipal(opcao5);
             div_botoes.removeChild(opcao5);
             div_botoes.style.display = 'grid';
             div_botoes.style.flexDirection = '';
-            div_botoes.style.width = '50%';
+            div_botoes.style.width = '';
         });
         opcao5.classList.add('main__botao-maior');
         opcao5.classList.remove('main__botao');
@@ -766,13 +768,13 @@ function versoes() {
         resetCSSNoHTML();
         nomearTitulo('Versões');
         limparParagrafo();
-        pergunta.innerHTML = 'Escolha uma outra versão/tema do enigma.';
+        pergunta.innerHTML = 'Escolha uma outra versão/tema do enigma. Padrão: Perguntas Gerais';
         mostrarParagrafo();
         criarBotoes(1, 'opcao5');
-        nomearBotoes('Perguntas Gerais, ToqueReflexo, Escola, Matemática, Voltar ao menu principal');
+        nomearBotoes('Perguntas Gerais, ToqueReflexo, Jogos, Matemática, Voltar ao menu principal');
         addEventListenerComHistorico(opcao1, 'click', trocarPerguntasParaPadrao);
         addEventListenerComHistorico(opcao2, 'click', trocarPerguntasParaDoMeuCanal);
-        addEventListenerComHistorico(opcao3, 'click', trocarPerguntasParaDaEscola);
+        addEventListenerComHistorico(opcao3, 'click', trocarPerguntasParaDeJogos);
         addEventListenerComHistorico(opcao4, 'click', trocarPerguntasParaDeMatematica);
         addEventListenerComHistorico(opcao5, 'click', () => {
             puxarMenuPrincipal(opcao5);
@@ -780,7 +782,7 @@ function versoes() {
                 div_botoes.removeChild(opcao5);
                 div_botoes.style.display = 'grid';
                 div_botoes.style.flexDirection = '';
-                div_botoes.style.width = '50%';
+                div_botoes.style.width = '';
             }, 3500);
         });
         opcao5.classList.add('main__botao-maior');
@@ -795,6 +797,7 @@ function versoes() {
 }
 
 function trocarPerguntasParaPadrao() {
+    pergunta.textContent = 'Perguntas Definidas para Perguntas Gerais.';
     perguntas = [
         'Quais o menor e o maior país do mundo?',
         'Qual o livro mais vendido no mundo a seguir à Bíblia?',
@@ -834,38 +837,107 @@ function trocarPerguntasParaPadrao() {
 }
 
 function trocarPerguntasParaDoMeuCanal() {
+    pergunta.textContent = 'Perguntas Definidas para ToqueReflexo.';
     perguntas = [
-        'Outro tipo de pergunta',
+        'Quantos canais principais eu já tive?',
+        'Qual jogo eu joguei por muito tempo no meu canal?',
+        'Quais são os amigos que mais apareceram no meu canal?',
+        'Qual foi meu vídeo mais bem sucedido no youtube?',
+        'Em que ano e mês eu postei o primeiro vídeo no youtube?'
     ];
     respostas = [
-        'Fortnite, Outra alternativa, Minecraft, Subway Surfers',
+        '1, 2, 3, 4',
+        'Fifa, Minecraft, Fortnite, Brawl Stars',
+        'Gamer/Contour/C9, Contour/Ample/Gamer, Gamer/Contour/Bugha, Bugha/Ample/Gamer',
+        'Como deixar a barra de tarefas transparente, Fifa mas..., Pou, Fortnite mas...',
+        'Jan-2021, Março-2021, Abril-2021, Fev-2021'
     ]
     respostasCertas = [
+        1,
         2,
+        0,
+        2,
+        3
     ]
 }
 
 function trocarPerguntasParaDeMatematica() {
+    pergunta.textContent = 'Perguntas Definidas para Matemática.';
     perguntas = [
-        'Outro Outro Outro tipo de pergunta',
+        'João comprou 3 maçãs por R$ 5,00. Quanto ele pagaria por 7 maçãs?',
+        'Um trem viaja a 80 km/h e percorre 400 km. Quanto tempo durou a viagem?',
+        'Em um triângulo equilátero, todos os lados têm a mesma medida. Se um lado mede 6 cm, qual é o perímetro do triângulo?',
+        'Uma caixa contém 12 bolas vermelhas, 8 bolas azuis e 5 bolas verdes. Qual a probabilidade de tirar uma bola azul da caixa?',
+        'Um número é múltiplo de 3 se a soma de seus algarismos for divisível por 3. Qual dos seguintes números é múltiplo de 3?',
+        'Ana tem 15 anos e seu irmão Pedro é 3 anos mais velho que ela. Quantos anos Pedro terá quando Ana tiver 20 anos?',
+        'Um relógio marca 3 horas. Que horas serão após 180 minutos?',
+        'Um jardim retangular tem 10 metros de comprimento e 6 metros de largura. Qual é a área do jardim?',
+        'Um litro de água pesa 1 kg. Quantos quilos pesam 2 litros de água?',
+        'Um avião decola às 9h da manhã e pousa às 13h da tarde. Quanto tempo durou o voo?'
     ];
     respostas = [
-        'Fortnite, Outra alternativa, Miles Morales, CPF',
+        'R$ 7,50, R$ 10,00, R$ 12,50,  R$ 15,00',
+        '5 horas, 6 horas, 7 horas, 8 horas',
+        '12 cm, 18 cm, 24cm, 30cm',
+        '1/3, 1/4, 1/5, 1/6',
+        '124, 135, 146, 157',
+        '20 anos, 21 anos, 22 anos, 23 anos',
+        '4 horas, 5 horas, 6 horas, 7 horas',
+        '30 m², 40 m², 50 m², 60m²',
+        '1 kg, 2 kg, 3 kg, 4 kg',
+        '2 horas, 3 horas, 4 horas, 5 horas'
     ]
     respostasCertas = [
+        3,
+        0,
+        1,
+        1,
+        1,
+        3,
         2,
+        1,
+        1,
+        2
     ]
 }
 
-function trocarPerguntasParaDaEscola() {
+function trocarPerguntasParaDeJogos() {
+    pergunta.textContent = 'Perguntas Definidas para Jogos.';
     perguntas = [
-        'Outro Outro tipo de pergunta',
+        'Qual encanador bigodudo é o protagonista da série Super Mario Bros?',
+        'Em Fortnite, qual é o nome do modo de jogo em que 100 jogadores se enfrentam em uma ilha até que reste apenas um?',
+        'Qual dessas celebridades está ou já foi disponibilizado como roupa comprável no jogo Free Fire?',
+        'No clássico Tetris, qual era o objetivo principal do jogo?',
+        'Qual é o nome do famoso castelo em Super Mario Bros?',
+        'Em League of Legends, qual é o nome do campeão conhecido por ser o "Yasuo do gelo"?',
+        'Qual é o nome do jogo em que o jogador controla um personagem que precisa pular plataformas e evitar obstáculos?',
+        'Qual é o nome do personagem principal do jogo Minecraft?',
+        'Em God of War, qual é o nome do filho de Kratos?',
+        'Qual é o nome da personagem principal do jogo The Last of Us?'
     ];
     respostas = [
-        'Fortnite, Outra alternativa, Miles Morales, Subway Surfers',
+        'Luigi, Mario, Wario, Waluigi',
+        'Battle Royale, Creative, Save the World, Arena',
+        'Neymar, Alok, Messi, Marshmello',
+        'Fazer pontuação, Evitar que não haja jogadas possíveis, Fazer um desenho, Montar um quebra-cabeça',
+        "Bowser's Castle, Peach's Castle, Mushroom Castle, Toad Castle",
+        'Ahri, Zed, Yasuo, Yone',
+        'Space Invaders, Pac-Man, Super Mario Bros, Donkey Kong',
+        'Alex, Steve, Herobrine, Entity 303',
+        'Atreus, Baldur, Thor, Freya',
+        'Tommy, Joel, Ellie, Bill'
     ]
     respostasCertas = [
+        1,
+        0,
+        1,
+        1,
+        0,
+        3,
         2,
+        1,
+        0,
+        2
     ]
 }
 
